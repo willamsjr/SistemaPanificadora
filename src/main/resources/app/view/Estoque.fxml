@@ -53,11 +53,11 @@
 
                                 <Button fx:id="btnExcluirProduto" text="EXCLUIR PRODUTO"
                                         prefHeight="40" prefWidth="180"
-                                        style="-fx-background-color: #ffd000; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                                        style="-fx-background-color: #e74c3c; -fx-font-weight: bold; -fx-cursor: hand;"/>
 
                                 <Button fx:id="btnAtualizar" text="ATUALIZAR"
                                         prefHeight="40" prefWidth="180"
-                                        style="-fx-background-color: #ffd000; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                                        style="-fx-background-color: #3299CC; -fx-font-weight: bold; -fx-cursor: hand;"/>
                             </children>
                         </HBox>
 

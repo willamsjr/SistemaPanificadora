@@ -52,27 +52,33 @@ public class TesteDAO {
 
         // --- 2. Testando Cadastro de Cliente  ---
         Cliente cliente = new Cliente();
-        cliente.setNome("Joao da Silva");
-        cliente.setTelefone("79998887766");
-        cliente.setCpf("12345678900");
-        cliente.setEndereco("Rua das Flores, 10");
+        // Gerando um sufixo único baseado no tempo para evitar o erro de Duplicate Entry
+        String sufixoUnico = String.valueOf(System.currentTimeMillis()).substring(7);
+
+        cliente.setNome("Joao da Silva " + sufixoUnico);
+        cliente.setTelefone("799" + sufixoUnico); // Gera um final de telefone diferente a cada teste
+        cliente.setCpf(sufixoUnico + "00"); // Apenas para teste, evita CPF duplicado também
+        cliente.setEndereco("Rua das Flores, " + sufixoUnico);
 
         System.out.println("\n--- 2. Testando Cadastro de Cliente (RF01) ---");
         if (clienteDAO.cadastrar(cliente)) {
-            System.out.println("[OK] SUCESSO: Cliente cadastrado.");
+            System.out.println("[OK] SUCESSO: Cliente cadastrado com Telefone: " + cliente.getTelefone());
         } else {
             System.err.println("[ERRO] FALHA: Erro ao cadastrar cliente.");
         }
 
         // --- 3. Testando Cadastro de Produto  ---
         Produto pao = new Produto();
-        pao.setNome("Pao Frances Teste Venda");
+        // Usando o tempo atual para garantir um nome único a cada teste
+        String timestamp = String.valueOf(System.currentTimeMillis()).substring(9);
+
+        pao.setNome("Pao Frances Teste " + timestamp);
         pao.setPreco(new BigDecimal("0.75"));
         pao.setQntEstoque(300);
 
         System.out.println("\n--- 3. Testando Cadastro de Produto (RF03) ---");
         if (produtoDAO.adicionar(pao)) {
-            System.out.println("[OK] SUCESSO: Produto cadastrado.");
+            System.out.println("[OK] SUCESSO: Produto cadastrado: " + pao.getNome());
         } else {
             System.err.println("[ERRO] FALHA: Erro ao cadastrar produto.");
         }
