@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.layout.Region?>
 <AnchorPane prefHeight="620.0" prefWidth="1010.0"
             style="-fx-background-color: #EEEEEE;"
             xmlns="http://javafx.com/javafx/8"
@@ -113,6 +114,8 @@
                                 text="REMOVER ITEM"
                                 prefWidth="180" prefHeight="45"
                                 style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold;" />
+
+                        <Region HBox.hgrow="ALWAYS" />
 
                         <Label fx:id="lblTotalVenda" text="TOTAL: R$ 0,00">
                             <font><Font name="System Bold" size="28"/></font>
