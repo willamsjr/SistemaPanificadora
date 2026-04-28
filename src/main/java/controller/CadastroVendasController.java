@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import java.io.IOException;
+
 public class CadastroVendasController {
 
     private ProdutoDAO produtoDAO = new ProdutoDAO();
@@ -53,6 +55,7 @@ public class CadastroVendasController {
     @FXML private Button btnGerenciarFuncionarios;
     @FXML private Button btnGerenciarUsuarios;
     @FXML private Button btnRemoverItem;
+    @FXML private Button btnAjuda;
 
     @FXML
     public void initialize() {
@@ -74,7 +77,20 @@ public class CadastroVendasController {
         btnGerenciarUsuarios.setOnAction(e -> abrirPopupUsuarios());
         btnRemoverItem.setOnAction(e -> handleRemoverItemSelecionado());
 
+        if (btnAjuda != null) {
+            btnAjuda.setOnAction(e -> acaoBotaoAjuda());
+            btnAjuda.toFront();
+        }
+
         atualizarTotalVenda();
+    }
+
+    @FXML
+    private void acaoBotaoAjuda() {
+        mostrarAjuda("Ajuda: Vendas",
+                "• Adicionar: Busque o produto, coloque a quantidade e clique em ADICIONAR.\n\n" +
+                        "• Corrigir: Selecione o item na tabela e use o botão vermelho REMOVER ITEM.\n\n" +
+                        "• Finalizar: Confira o valor total e clique em FINALIZAR VENDA para concluir.");
     }
 
     private void configurarBuscaInstantanea() {
@@ -263,6 +279,41 @@ public class CadastroVendasController {
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erro", "Falha ao abrir: " + titulo);
+        }
+    }
+
+    private void mostrarAjuda(String titulo, String texto) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
+            if (loader.getLocation() == null) {
+                throw new IOException("Arquivo AjudaView.fxml não encontrado!");
+            }
+
+            Parent root = loader.load();
+            AjudaController ajuda = loader.getController();
+            ajuda.initData(titulo, texto);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajuda - " + titulo);
+
+            // --- AS TRAVAS DE SEGURANÇA ---
+
+            // 1. Bloqueia a janela de vendas atrás (Obrigatório clicar em Entendi ou fechar)
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            // 2. Garante que ela apareça na frente de tudo
+            stage.setAlwaysOnTop(true);
+
+            // 3. Impede o usuário de redimensionar e bagunçar o texto
+            stage.setResizable(false);
+
+            // Use showAndWait() em vez de apenas show() para pausar o código aqui
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar ajuda: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erro", "Não foi possível abrir a ajuda.");
         }
     }
 }

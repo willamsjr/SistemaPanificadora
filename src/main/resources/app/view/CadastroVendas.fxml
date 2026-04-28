@@ -32,6 +32,13 @@
                 <font><Font name="System Bold" size="24"/></font>
             </Label>
 
+            <Region HBox.hgrow="ALWAYS" /> <Button fx:id="btnAjuda"
+                                                   text="?"
+                                                   onAction="#acaoBotaoAjuda"
+                                                   prefWidth="45.0" prefHeight="45.0"
+                                                   minWidth="45.0" minHeight="45.0"
+                                                   style="-fx-background-color: #f1c40f; -fx-text-fill: black; -fx-background-radius: 50; -fx-font-weight: bold; -fx-font-size: 18; -fx-cursor: hand;" />
+
             <!-- BOTÕES: FUNCIONÁRIOS + USUÁRIOS -->
             <HBox spacing="10">
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="15" alignment="TOP_CENTER" prefWidth="500" prefHeight="450"
+      style="-fx-padding: 25; -fx-background-color: white; -fx-border-color: #f1c40f; -fx-border-width: 3; -fx-border-radius: 15; -fx-background-radius: 15;"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.AjudaController">
+
+    <Label fx:id="lblTitulo" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+
+    <Separator />
+
+    <Label fx:id="lblTexto" wrapText="true" VBox.vgrow="ALWAYS"
+           style="-fx-font-size: 16px; -fx-text-fill: #34495e; -fx-line-spacing: 5px; -fx-text-alignment: justify;" />
+
+    <Region VBox.vgrow="ALWAYS" /> <Button text="Entendi" onAction="#fechar"
+                                           style="-fx-background-color: #f1c40f; -fx-text-fill: black; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 14px;"
+                                           prefWidth="120" prefHeight="40" />
+</VBox>
