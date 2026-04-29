@@ -4,6 +4,7 @@ import dao.AgendamentoDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -24,6 +25,11 @@ import java.util.List;
 import java.util.Optional;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import java.io.IOException;
 
 public class AgendamentoController {
 
@@ -45,6 +51,7 @@ public class AgendamentoController {
     @FXML private Button btnAgendar;
     @FXML private Button btnConcluirPedido;
     @FXML private Button btnDeletarPedido;
+    @FXML private Button btnAjuda;
 
     @FXML
     private void initialize() {
@@ -87,6 +94,19 @@ public class AgendamentoController {
                 }
             }
         });
+
+        if (btnAjuda != null) {
+            btnAjuda.setOnAction(event -> acaoBotaoAjuda());
+        }
+    }
+
+    @FXML
+    private void acaoBotaoAjuda() {
+        // Texto focado em Agendamentos com a regra de exclusão
+        mostrarAjuda("Ajuda: Agendamentos",
+                "• Novo Agendamento: Use o painel à direita para inserir Data, Hora e Cliente.\n\n" +
+                        "• Concluir Pedido: Selecione um item pendente e use o botão 'Concluir' após a entrega.\n\n" +
+                        "• Apagar Pedido: Para segurança, um agendamento só pode ser apagado se já estiver com o status CONCLUÍDO.");
     }
 
     private void configurarTabela() {
@@ -267,5 +287,28 @@ public class AgendamentoController {
                 javafx.application.Platform.runLater(textField::end);
             }
         });
+    }
+
+    private void mostrarAjuda(String titulo, String texto) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
+            Parent root = loader.load();
+
+            // Pega o controller da janelinha de ajuda que criamos ontem
+            AjudaController ajuda = loader.getController();
+            ajuda.initData(titulo, texto);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajuda - " + titulo);
+
+            // Travas de segurança (Modal)
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

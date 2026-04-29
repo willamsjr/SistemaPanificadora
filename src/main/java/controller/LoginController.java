@@ -31,7 +31,7 @@ public class LoginController {
     }
 
     @FXML
-    public void inicialize(){
+    public void inicialize() {
         btnLogin.setDefaultButton(true);
     }
 

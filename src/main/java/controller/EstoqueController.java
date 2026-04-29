@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -36,6 +37,7 @@ public class EstoqueController {
     @FXML private Button btnEditarProduto;
     @FXML private Button btnExcluirProduto;
     @FXML private Button btnAtualizar;
+    @FXML private Button btnAjuda; // <<<<< ADICIONADO AQUI
 
     private ObservableList<Produto> listaProdutos;
     private final ProdutoDAO produtoDAO = new ProdutoDAO();
@@ -53,6 +55,19 @@ public class EstoqueController {
         btnEditarProduto.setOnAction(event -> abrirTelaEditar());
         btnExcluirProduto.setOnAction(event -> excluirProduto());
         btnAtualizar.setOnAction(event -> carregarTabela());
+
+        // Vincula a ação ao botão de ajuda
+        if (btnAjuda != null) {
+            btnAjuda.setOnAction(event -> acaoBotaoAjuda());
+        }
+    }
+
+    @FXML
+    private void acaoBotaoAjuda() {
+        // Texto focado em Estoque conforme a tela
+        mostrarAjuda("Controle de Estoque",
+                "• Cadastrar: Preencha o formulário à direita para adicionar novos produtos.\n\n" +
+                        "• Gestão: Selecione um item na tabela para Editar ou Excluir. Itens com quantidade baixa podem ser destacados.");
     }
 
     // =====================================================
@@ -78,7 +93,7 @@ public class EstoqueController {
     // CATEGORIZAR LINHAS COM ESTOQUE BAIXO
     // =====================================================
     private void aplicarCorEstoqueBaixo() {
-        tableEstoque.setRowFactory(tv -> new TableRow<>() {
+        tableEstoque.setRowFactory(tv -> new TableRow<Produto>() {
             @Override
             protected void updateItem(Produto produto, boolean empty) {
                 super.updateItem(produto, empty);
@@ -93,10 +108,9 @@ public class EstoqueController {
     }
 
     // =====================================================
-    // CADASTRAR PRODUTO NA PRÓPRIA TELA (SEM MODAL)
+    // CADASTRAR PRODUTO NA PRÓPRIA TELA
     // =====================================================
     private void cadastrarProduto() {
-
         if (txtNome.getText().isEmpty() ||
                 txtPreco.getText().isEmpty() ||
                 txtQuantidade.getText().isEmpty() ||
@@ -118,7 +132,7 @@ public class EstoqueController {
             novo.setQntEstoque(qtd);
             novo.setEstoqueMinimo(min);
 
-            produtoDAO.adicionar(novo); // <<<<< CORRIGIDO
+            produtoDAO.adicionar(novo);
 
             limparCampos();
             carregarTabela();
@@ -145,7 +159,6 @@ public class EstoqueController {
     // EDITAR PRODUTO → abre modal
     // =====================================================
     private void abrirTelaEditar() {
-
         Produto selecionado = tableEstoque.getSelectionModel().getSelectedItem();
         if (selecionado == null) {
             alerta("Selecione um produto para editar!", Alert.AlertType.WARNING);
@@ -163,7 +176,6 @@ public class EstoqueController {
     // EXCLUIR
     // =====================================================
     private void excluirProduto() {
-
         Produto selecionado = tableEstoque.getSelectionModel().getSelectedItem();
         if (selecionado == null) {
             alerta("Selecione um produto para excluir!", Alert.AlertType.WARNING);
@@ -175,12 +187,13 @@ public class EstoqueController {
     }
 
     // =====================================================
-    // ABRIR MODAL (REUSADO PARA EDITAR)
+    // ABRIR MODAL
     // =====================================================
     private boolean abrirModal(String arquivo, String titulo, Produto produtoEditar) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(arquivo));
-            Scene scene = new Scene(loader.load());
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
 
             Object controller = loader.getController();
 
@@ -206,12 +219,37 @@ public class EstoqueController {
                         .getMethod("isAlterado")
                         .invoke(controller);
             } catch (Exception e) {
-                return true; // fallback: assume que alterou
+                return true;
             }
 
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private void mostrarAjuda(String titulo, String texto) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
+            Parent root = loader.load();
+
+            // Configurando o texto dentro do AjudaController personalizado
+            AjudaController ajuda = loader.getController();
+            ajuda.initData(titulo, texto);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajuda - " + titulo);
+
+            // Travas de segurança para a janela
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setAlwaysOnTop(true);
+            stage.setResizable(false);
+
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar ajuda: " + e.getMessage());
         }
     }
 }

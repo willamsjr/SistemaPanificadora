@@ -1,5 +1,7 @@
 package controller;
 
+import app.MainApp;
+import util.Sessao;
 import dao.ProdutoDAO;
 import dao.VendaDAO;
 import javafx.collections.FXCollections;
@@ -13,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Funcionario;
 import model.Item_venda;
 import model.Produto;
 import model.Venda;
@@ -83,6 +86,7 @@ public class CadastroVendasController {
         }
 
         atualizarTotalVenda();
+        verificarPermissoes();
     }
 
     @FXML
@@ -91,6 +95,20 @@ public class CadastroVendasController {
                 "• Adicionar: Busque o produto, coloque a quantidade e clique em ADICIONAR.\n\n" +
                         "• Corrigir: Selecione o item na tabela e use o botão vermelho REMOVER ITEM.\n\n" +
                         "• Finalizar: Confira o valor total e clique em FINALIZAR VENDA para concluir.");
+    }
+
+    private void verificarPermissoes() {
+        // BUSCA NA MAINAPP EM VEZ DE SESSAO
+        Funcionario logado = MainApp.getUsuarioLogado();
+
+        if (logado != null && "ATENDENTE".equalsIgnoreCase(logado.getCargo())) {
+            // Usa os IDs exatos que você declarou no topo da classe
+            btnGerenciarFuncionarios.setVisible(false);
+            btnGerenciarUsuarios.setVisible(false);
+
+            btnGerenciarFuncionarios.setManaged(false);
+            btnGerenciarUsuarios.setManaged(false);
+        }
     }
 
     private void configurarBuscaInstantanea() {

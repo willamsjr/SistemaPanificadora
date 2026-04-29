@@ -28,6 +28,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import java.io.IOException;
 
 public class RelatoriosController {
 
@@ -73,6 +79,14 @@ public class RelatoriosController {
         btnLimpar.setOnAction(e -> handleLimpar());
 
         carregarTodasVendas();
+    }
+
+    @FXML
+    private void acaoBotaoAjuda() {
+        mostrarAjuda("Ajuda: Relatórios e Lucros",
+                "• Filtros: Escolha a DATA INICIAL e FINAL para ver as vendas de um período.\n\n" +
+                        "• Gráficos: O gráfico de colunas mostra os produtos mais vendidos (o que sai mais).\n\n" +
+                        "• Exportar: Use o botão PDF para gerar um arquivo.");
     }
 
     private void configurarTabela() {
@@ -331,5 +345,28 @@ public class RelatoriosController {
         alert.setHeaderText(null);
         alert.setContentText(mensagem);
         alert.showAndWait();
+    }
+
+    private void mostrarAjuda(String titulo, String texto) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
+            Parent root = loader.load();
+
+            // Pega o controller da janelinha de ajuda que criamos ontem
+            AjudaController ajuda = loader.getController();
+            ajuda.initData(titulo, texto);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Ajuda - " + titulo);
+
+            // Travas de segurança (Modal)
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

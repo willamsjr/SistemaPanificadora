@@ -3,15 +3,18 @@ package model;
 public class Funcionario {
     private Integer id;
     private String nome;
+    private String cpf; // << ADICIONADO
     private String login;
     private String senhaHash;
-    private String cargo; // "ADMIN" ou "FUNCIONARIO"
+    private String cargo; // "ADMIN", "GERENTE", "ATENDENTE", etc.
 
     public Funcionario() {}
 
-    public Funcionario(Integer id, String nome, String login, String senhaHash, String cargo) {
+    // Construtor atualizado com CPF
+    public Funcionario(Integer id, String nome, String cpf, String login, String senhaHash, String cargo) {
         this.id = id;
         this.nome = nome;
+        this.cpf = cpf;
         this.login = login;
         this.senhaHash = senhaHash;
         this.cargo = cargo;
@@ -22,6 +25,10 @@ public class Funcionario {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
+
+    // GETTER E SETTER DO CPF (O que estava faltando!)
+    public String getCpf() { return cpf; }
+    public void setCpf(String cpf) { this.cpf = cpf; }
 
     public String getLogin() { return login; }
     public void setLogin(String login) { this.login = login; }

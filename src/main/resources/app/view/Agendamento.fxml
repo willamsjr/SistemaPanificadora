@@ -4,82 +4,102 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.paint.Color?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.AgendamentoController"
-            prefWidth="1010.0" prefHeight="620.0"
-            style="-fx-background-color: #EEEEEE;">
+<AnchorPane prefHeight="620.0" prefWidth="1010.0" style="-fx-background-color: #EEEEEE;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AgendamentoController">
+    <children>
+        <VBox spacing="20" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <children>
 
-    <!-- TOPO -->
-    <top>
-        <VBox spacing="10" BorderPane.alignment="CENTER">
-            <padding><Insets top="20" left="20" /></padding>
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <children>
+                        <Label text="Agendamentos">
+                            <font>
+                                <Font name="System Bold" size="24" />
+                            </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="btnAjuda" onAction="#acaoBotaoAjuda" prefHeight="45.0" prefWidth="45.0"
+                                style="-fx-background-color: #f1c40f; -fx-text-fill: black; -fx-background-radius: 50; -fx-font-weight: bold; -fx-font-size: 18; -fx-cursor: hand;"
+                                text="?" />
+                    </children>
+                </HBox>
+
+                <HBox spacing="35" VBox.vgrow="ALWAYS">
+                    <children>
+
+                        <VBox spacing="15" HBox.hgrow="ALWAYS">
+                            <children>
+                                <TableView fx:id="tblAgendamentos" style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #E0E0E0;" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="colData" prefWidth="130" text="Data/Hora" />
+                                        <TableColumn fx:id="colCliente" prefWidth="120" text="Cliente" />
+                                        <TableColumn fx:id="colTelefone" prefWidth="120" text="Telefone" />
+                                        <TableColumn fx:id="colDescricao" prefWidth="200" text="Descrição" />
+                                        <TableColumn fx:id="colStatus" prefWidth="90" text="Status" />
+                                    </columns>
+                                    <columnResizePolicy>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                    </columnResizePolicy>
+                                </TableView>
+
+                                <HBox spacing="15">
+                                    <children>
+                                        <Button fx:id="btnConcluirPedido" prefHeight="40" prefWidth="220" style="-fx-background-radius: 10; -fx-font-weight: bold;" text="Concluir Pedido Selecionado" />
+                                        <Button fx:id="btnDeletarPedido" prefHeight="40" prefWidth="220" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: bold;" text="Apagar Pedido (Concluído)" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <VBox prefWidth="320" spacing="12" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 20;">
+                            <effect>
+                                <DropShadow blurType="GAUSSIAN" radius="14.5">
+                                    <color>
+                                        <Color opacity="0.1" />
+                                    </color>
+                                </DropShadow>
+                            </effect>
+                            <children>
+                                <Label text="Novo Agendamento" style="-fx-font-weight: bold;">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Label>
+
+                                <Region prefHeight="5" />
+
+                                <Label text="Data do Pedido" />
+                                <DatePicker fx:id="datePickerData" maxWidth="Infinity" prefHeight="35" style="-fx-background-color: #F0F0F0;" />
+
+                                <Label text="Hora (HH:mm)" />
+                                <TextField fx:id="txtHora" prefHeight="35" promptText="Ex: 14:30" style="-fx-background-color: #F0F0F0; -fx-background-radius: 10;" />
+
+                                <Label text="Nome do Cliente" />
+                                <TextField fx:id="txtClienteNome" prefHeight="35" promptText="Nome do cliente" style="-fx-background-color: #F0F0F0; -fx-background-radius: 10;" />
+
+                                <Label text="Telefone" />
+                                <TextField fx:id="txtClienteTelefone" prefHeight="35" promptText="(75) 99999-8888" style="-fx-background-color: #F0F0F0; -fx-background-radius: 10;" />
+
+                                <Label text="Descrição do Pedido" />
+                                <TextArea fx:id="txtDescricao" prefHeight="120" promptText="Ex: 1 Bolo de chocolate, 20 pães" style="-fx-control-inner-background: #F0F0F0;" wrapText="true" />
+
+                                <Region VBox.vgrow="ALWAYS" />
+
+                                <Button fx:id="btnAgendar" maxWidth="Infinity" prefHeight="45" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 15; -fx-font-weight: bold;" text="AGENDAR">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
         </VBox>
-    </top>
-
-    <!-- CENTRO (tabela + botões) -->
-    <center>
-        <VBox spacing="15" BorderPane.alignment="CENTER">
-            <padding><Insets left="20" right="20"/></padding>
-
-            <Label text="Agendamentos">
-                <font><Font name="System Bold" size="24"/></font>
-            </Label>
-
-            <!-- TABELA RESPONSIVA -->
-            <TableView fx:id="tblAgendamentos" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colData" text="Data/Hora" prefWidth="130"/>
-                    <TableColumn fx:id="colCliente" text="Cliente" prefWidth="120"/>
-                    <TableColumn fx:id="colTelefone" text="Telefone" prefWidth="120"/>
-                    <TableColumn fx:id="colDescricao" text="Descrição" prefWidth="200"/>
-                    <TableColumn fx:id="colStatus" text="Status" prefWidth="90"/>
-                </columns>
-            </TableView>
-
-            <HBox spacing="10">
-                <Button fx:id="btnConcluirPedido" prefWidth="220" text="Concluir Pedido Selecionado"/>
-                <Button fx:id="btnDeletarPedido" prefWidth="220"
-                        text="Apagar Pedido (Concluído)"
-                        style="-fx-background-color: #e74c3c;" textFill="WHITE"/>
-            </HBox>
-        </VBox>
-    </center>
-
-    <!-- LADO DIREITO (FORMULÁRIO) -->
-    <right>
-        <VBox spacing="10" prefWidth="320" BorderPane.alignment="CENTER">
-            <padding><Insets top="20" right="20"/></padding>
-
-            <Label text="Novo Agendamento">
-                <font><Font name="System Bold" size="16"/></font>
-            </Label>
-
-            <Label text="Data do Pedido"/>
-            <DatePicker fx:id="datePickerData" prefWidth="280"/>
-
-            <Label text="Hora (HH:mm)"/>
-            <TextField fx:id="txtHora" promptText="Ex: 14:30"/>
-
-            <Label text="Nome do Cliente"/>
-            <TextField fx:id="txtClienteNome" promptText="Nome do cliente"/>
-
-            <Label text="Telefone"/>
-            <TextField fx:id="txtClienteTelefone" promptText="(75) 99999-8888"/>
-
-            <Label text="Descrição do Pedido"/>
-            <TextArea fx:id="txtDescricao" prefHeight="150" wrapText="true"
-                      promptText="Ex: 1 Bolo de chocolate, 20 pães"/>
-
-            <Button fx:id="btnAgendar" prefWidth="280"
-                    style="-fx-background-color: #27ae60;"
-                    textFill="WHITE" text="AGENDAR">
-                <font><Font name="System Bold" size="14"/></font>
-                <VBox.margin><Insets top="20"/></VBox.margin>
-            </Button>
-
-        </VBox>
-    </right>
-
-</BorderPane>
+    </children>
+</AnchorPane>
