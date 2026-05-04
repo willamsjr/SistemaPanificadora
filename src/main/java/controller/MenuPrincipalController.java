@@ -20,6 +20,18 @@ public class MenuPrincipalController {
     private Button btnGerenciarFuncionarios;
 
     @FXML
+    private Button btnCadastroVendas;
+
+    @FXML
+    private Button btnRelatorios;
+
+    @FXML
+    private Button btnAgendamento;
+
+    @FXML
+    private Button btnEstoque;
+
+    @FXML
     private void handleGerenciarFuncionarios() {
         loadView("/app/view/GerenciarFuncionarios.fxml");
     }
@@ -83,13 +95,26 @@ public class MenuPrincipalController {
         Funcionario usuarioLogado = MainApp.getUsuarioLogado();
 
         if (usuarioLogado != null) {
-            if (!"ADMIN".equalsIgnoreCase(usuarioLogado.getCargo())) {
+            String cargo = usuarioLogado.getCargo().toUpperCase();
 
-                if (btnGerenciarFuncionarios != null) {
-                    btnGerenciarFuncionarios.setVisible(false);
-                    btnGerenciarFuncionarios.setManaged(false);
-                }
+            if ("PADEIRO".equals(cargo)) {
+                // Aqui você só esconde os botões do MENU LATERAL
+                esconderBotao(btnGerenciarFuncionarios);
+                esconderBotao(btnCadastroVendas);
+                esconderBotao(btnRelatorios);
             }
+            else if ("ATENDENTE".equals(cargo)) {
+                esconderBotao(btnGerenciarFuncionarios);
+                esconderBotao(btnRelatorios);
+            }
+        }
+    }
+
+    // Método auxiliar para deixar o código limpo
+    private void esconderBotao(Button btn) {
+        if (btn != null) {
+            btn.setVisible(false);
+            btn.setManaged(false);
         }
     }
 }

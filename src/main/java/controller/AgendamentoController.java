@@ -1,5 +1,6 @@
 package controller;
 
+import app.MainApp;
 import dao.AgendamentoDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +30,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Funcionario;
+
 import java.io.IOException;
 
 public class AgendamentoController {
@@ -55,19 +58,21 @@ public class AgendamentoController {
 
     @FXML
     private void initialize() {
+        // 1. Configurações da Tabela e Dados
         configurarTabela();
         carregarAgendamentos();
 
+        // 2. Ações dos Botões
         btnAgendar.setOnAction(e -> handleAgendar());
         btnConcluirPedido.setOnAction(e -> handleConcluirPedido());
         btnDeletarPedido.setOnAction(e -> handleDeletarPedido());
 
+        // 3. Configurações de Data e Máscaras
         datePickerData.setValue(LocalDate.now());
-
         aplicarMascaraTelefone(txtClienteTelefone);
         aplicarMascaraHora(txtHora);
 
-        // Bloqueia dias passados no calendário visualmente
+        // 4. Bloqueia dias passados no calendário
         datePickerData.setDayCellFactory(picker -> new javafx.scene.control.DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -76,27 +81,51 @@ public class AgendamentoController {
             }
         });
 
-        // Criar o formatador no padrão BR
+        // 5. Formatador de Data padrão BR
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        // Configurar a coluna para exibir no formato BR
         colData.setCellFactory(column -> new TableCell<Agendamento, LocalDateTime>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
-
                 if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    // Formata a data de "EUA" para "Brasil"
                     setText(formatter.format(item));
                 }
             }
         });
 
+        // 6. Botão de Ajuda
         if (btnAjuda != null) {
             btnAjuda.setOnAction(event -> acaoBotaoAjuda());
+        }
+
+        // ==========================================
+        // 7. NOVA TRAVA DE SEGURANÇA (SESSÃO PADEIRO)
+        // ==========================================
+        verificarPermissoesPadeiro();
+    }
+
+    private void verificarPermissoesPadeiro() {
+        // Busca o usuário logado na MainApp
+        Funcionario logado = MainApp.getUsuarioLogado();
+
+        if (logado != null && "PADEIRO".equalsIgnoreCase(logado.getCargo())) {
+            // Remove os botões de ação crítica para o Padeiro
+            if (btnConcluirPedido != null) {
+                btnConcluirPedido.setVisible(false);
+                btnConcluirPedido.setManaged(false);
+            }
+
+            if (btnDeletarPedido != null) {
+                btnDeletarPedido.setVisible(false);
+                btnDeletarPedido.setManaged(false);
+            }
+
+            // Opcional: Desabilitar o botão de agendar se ele só puder ver
+            // btnAgendar.setDisable(true);
         }
     }
 
