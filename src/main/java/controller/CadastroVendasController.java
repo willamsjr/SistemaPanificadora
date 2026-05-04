@@ -250,6 +250,7 @@ public class CadastroVendasController {
 
         Venda venda = new Venda();
         venda.setIdFuncionario(ID_FUNCIONARIO_LOGADO);
+
         venda.setData(LocalDateTime.now());
         venda.setValorTotal(calcularTotal());
 
