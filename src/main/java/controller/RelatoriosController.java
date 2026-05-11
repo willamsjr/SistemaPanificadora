@@ -230,6 +230,7 @@ public class RelatoriosController {
         series.setName("Vendas por Produto");
 
         Map<String, Double> resumoVendas = listaVendas.stream()
+                .filter(v -> v.getNomeProduto() != null)
                 .collect(Collectors.groupingBy(
                         Venda::getNomeProduto,
                         Collectors.summingDouble(v -> v.getValorTotal().doubleValue())

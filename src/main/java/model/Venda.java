@@ -6,29 +6,25 @@ import java.util.List;
 
 public class Venda {
 
+    // Campos principais do Banco de Dados
     private Integer id;
     private LocalDateTime data;
     private BigDecimal valorTotal;
     private Integer idFuncionario;
     private Integer idCliente;
-
-    private String nomeFuncionario;
-    private String nomeCliente;
-
-    // 🔹 CAMPO QUE FALTAVA
     private String formaPagamento;
 
-    // novos campos para exibir no relatório resumo
-    private String nomeProduto;      // nome do (primeiro) produto vendido / resumo
-    private Integer quantidadeTotal; // soma das quantidades vendidas na venda
+    // Campos auxiliares para exibição em Tabelas e Relatórios (evita JOINS complexos no Controller)
+    private String nomeFuncionario;
+    private String nomeCliente;
+    private String nomeProduto;      // Nome do principal produto (para o gráfico do BarChart)
+    private Integer quantidadeTotal; // Soma das quantidades daquela venda
 
+    // Relacionamento Um-para-Muitos
     private List<Item_venda> itens;
 
+    // Construtor Vazio
     public Venda() {}
-
-    // ============================================================
-    // GETTERS E SETTERS
-    // ============================================================
 
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
@@ -48,7 +44,9 @@ public class Venda {
     public List<Item_venda> getItens() { return itens; }
     public void setItens(List<Item_venda> itens) { this.itens = itens; }
 
-    public String getNomeFuncionario() { return nomeFuncionario; }
+    public String getNomeFuncionario() {
+        return (nomeFuncionario != null) ? nomeFuncionario : "N/A";
+    }
     public void setNomeFuncionario(String nomeFuncionario) { this.nomeFuncionario = nomeFuncionario; }
 
     public String getNomeCliente() {
@@ -59,21 +57,14 @@ public class Venda {
     }
     public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
 
-    // 🔹 getters e setters novos para relatório
     public String getNomeProduto() { return nomeProduto; }
     public void setNomeProduto(String nomeProduto) { this.nomeProduto = nomeProduto; }
 
-    public Integer getQuantidadeTotal() { return quantidadeTotal == null ? 0 : quantidadeTotal; }
+    public Integer getQuantidadeTotal() {
+        return (quantidadeTotal == null) ? 0 : quantidadeTotal;
+    }
     public void setQuantidadeTotal(Integer quantidadeTotal) { this.quantidadeTotal = quantidadeTotal; }
 
-    // ============================================================
-    // 🔹 GETTERS E SETTERS DA FORMA DE PAGAMENTO (ADICIONADOS)
-    // ============================================================
-    public String getFormaPagamento() {
-        return formaPagamento;
-    }
-
-    public void setFormaPagamento(String formaPagamento) {
-        this.formaPagamento = formaPagamento;
-    }
+    public String getFormaPagamento() { return formaPagamento; }
+    public void setFormaPagamento(String formaPagamento) { this.formaPagamento = formaPagamento; }
 }

@@ -197,7 +197,6 @@ public class CadastroVendasController {
         });
     }
 
-    // Método auxiliar para não repetir código
     private void processarInclusaoNoCarrinho(Produto p, int qtd) {
         if (qtd > p.getQntEstoque()) {
             showAlert(Alert.AlertType.WARNING, "Estoque Insuficiente", "Só temos " + p.getQntEstoque() + " unidades.");
@@ -243,29 +242,48 @@ public class CadastroVendasController {
     }
 
     private void handleFinalizarVenda() {
+        // 1. Validação: Verifica se o carrinho está vazio
         if (carrinhoItens.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Erro", "Adicione itens à venda.");
             return;
         }
 
+        // 2. Criar o objeto Venda e preencher os dados básicos
         Venda venda = new Venda();
-        venda.setIdFuncionario(ID_FUNCIONARIO_LOGADO);
-
         venda.setData(LocalDateTime.now());
         venda.setValorTotal(calcularTotal());
 
-        ArrayList<Item_venda> itensLimpos = new ArrayList<>();
-        for (Item_venda item : carrinhoItens) {
-            itensLimpos.add(new Item_venda(item.getProduto(), item.getQuantidade()));
-        }
-        venda.setItens(itensLimpos);
+        // 3. BUSCA O FUNCIONÁRIO LOGADO (Correção Crítica)
+        // Usando a mesma lógica que você já tem no verificarPermissoes()
+        Funcionario logado = MainApp.getUsuarioLogado();
 
+        if (logado != null) {
+            // Certifique-se que o método na Model Funcionario é getId_funcionario() ou getId()
+            venda.setIdFuncionario(logado.getId());
+        } else {
+            // Se por algum erro o login não foi detectado, avisamos o usuário
+            showAlert(Alert.AlertType.ERROR, "Erro de Sessão", "Não foi possível identificar o funcionário logado. Por favor, faça login novamente.");
+            return;
+        }
+
+        // 4. Copiar os itens do carrinho (ObservableList) para a lista da Venda (ArrayList)
+        // Isso evita problemas de vinculação entre a interface e o banco
+        ArrayList<Item_venda> itensParaSalvar = new ArrayList<>();
+        for (Item_venda item : carrinhoItens) {
+            // Criamos um novo objeto de item para garantir que os dados estão limpos
+            itensParaSalvar.add(new Item_venda(item.getProduto(), item.getQuantidade()));
+        }
+        venda.setItens(itensParaSalvar);
+
+        // 5. Salvar no Banco através do DAO
         if (vendaDAO.registrarVenda(venda)) {
-            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Venda concluída!");
+            showAlert(Alert.AlertType.INFORMATION, "Sucesso", "Venda concluída com sucesso!");
+
+            // Limpar a tela para a próxima venda
             carrinhoItens.clear();
             atualizarTotalVenda();
         } else {
-            showAlert(Alert.AlertType.ERROR, "Erro", "Falha ao registrar venda.");
+            showAlert(Alert.AlertType.ERROR, "Erro", "Falha ao registrar a venda no banco de dados.");
         }
     }
 

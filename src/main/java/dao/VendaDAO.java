@@ -118,31 +118,41 @@ public class VendaDAO {
 
     // BUSCAR TODAS AS VENDAS PARA RELATÓRIO (resumido)
     public List<Venda> buscarTodasVendasRelatorio() {
-        String sql =
-                "SELECT v.id_venda, v.data, v.valor_total, v.id_funcionario, v.id_cliente, " +
-                        " (SELECT p.nome FROM item_venda iv JOIN produto p ON iv.id_produto = p.id_produto WHERE iv.id_venda = v.id_venda LIMIT 1) AS nome_produto, " +
-                        " (SELECT SUM(iv.quantidade) FROM item_venda iv WHERE iv.id_venda = v.id_venda) AS quantidade_total, " +
-                        " f.nome AS nome_funcionario, c.nome AS nome_cliente " +
-                        "FROM venda v " +
-                        "LEFT JOIN funcionario f ON v.id_funcionario = f.id_funcionario " +
-                        "LEFT JOIN cliente c ON v.id_cliente = c.id_cliente " +
-                        "ORDER BY v.data DESC";
-
-        List<Venda> lista = new ArrayList<>();
+        List<Venda> vendas = new ArrayList<>();
+        // SQL robusto: busca o funcionário e o nome do primeiro produto daquela venda
+        String sql = "SELECT v.*, f.nome AS nome_do_funcionario, " +
+                "(SELECT p.nome FROM item_venda iv " +
+                " JOIN produto p ON iv.id_produto = p.id_produto " +
+                " WHERE iv.id_venda = v.id_venda LIMIT 1) AS nome_produto_resumo, " +
+                "(SELECT SUM(iv2.quantidade) FROM item_venda iv2 " +
+                " WHERE iv2.id_venda = v.id_venda) AS qtd_total " +
+                "FROM venda v " +
+                "LEFT JOIN funcionario f ON v.id_funcionario = f.id_funcionario";
 
         try (Connection conn = ConexaoDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Venda v = mapearVendaRelatorio(rs);
-                lista.add(v);
-            }
+                Venda v = new Venda();
+                v.setId(rs.getInt("id_venda"));
+                v.setData(rs.getTimestamp("data").toLocalDateTime());
+                v.setValorTotal(rs.getBigDecimal("valor_total"));
+                v.setFormaPagamento(rs.getString("forma_pagamento"));
 
+                // Preenche o nome do funcionário (resolve o N/A)
+                v.setNomeFuncionario(rs.getString("nome_do_funcionario"));
+
+                // Preenche o produto (faz as barras do gráfico aparecerem)
+                v.setNomeProduto(rs.getString("nome_produto_resumo"));
+                v.setQuantidadeTotal(rs.getInt("qtd_total"));
+
+                vendas.add(v);
+            }
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar todas vendas (relatório): " + e.getMessage());
+            e.printStackTrace();
         }
-        return lista;
+        return vendas;
     }
 
     // compatibilidade com TesteDAO antigo
