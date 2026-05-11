@@ -79,6 +79,13 @@ public class RelatoriosController {
         btnLimpar.setOnAction(e -> handleLimpar());
 
         carregarTodasVendas();
+
+        tblVendas.setOnMouseClicked(event -> {
+            // Verifica se foi clique duplo e se tem algo selecionado
+            if (event.getClickCount() == 2 && tblVendas.getSelectionModel().getSelectedItem() != null) {
+                exibirPopUpDetalhes(tblVendas.getSelectionModel().getSelectedItem());
+            }
+        });
     }
 
     @FXML
@@ -87,6 +94,28 @@ public class RelatoriosController {
                 "• Filtros: Escolha a DATA INICIAL e FINAL para ver as vendas de um período.\n\n" +
                         "• Gráficos: O gráfico de colunas mostra os produtos mais vendidos (o que sai mais).\n\n" +
                         "• Exportar: Use o botão PDF para gerar um arquivo.");
+    }
+
+    private void exibirPopUpDetalhes(Venda vendaSelecionada) {
+        VendaDAO dao = new VendaDAO();
+        List<String> itens = dao.buscarDetalhesItens(vendaSelecionada.getId());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Detalhamento da Venda #" + vendaSelecionada.getId());
+        alert.setHeaderText("Produtos Vendidos por: " + vendaSelecionada.getNomeFuncionario());
+
+        StringBuilder sb = new StringBuilder();
+        itens.forEach(item -> sb.append("✔ ").append(item).append("\n"));
+
+        // Mostra o total geral no final do pop-up
+        sb.append("\n--------------------------\n");
+        sb.append("VALOR TOTAL: ").append(formatadorMoeda.format(vendaSelecionada.getValorTotal()));
+
+        alert.setContentText(sb.toString());
+
+        // Deixa o visual mais limpo
+        alert.getDialogPane().setMinWidth(400);
+        alert.showAndWait();
     }
 
     private void configurarTabela() {

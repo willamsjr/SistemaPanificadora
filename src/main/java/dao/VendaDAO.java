@@ -318,5 +318,29 @@ public class VendaDAO {
         }
         return lista;
     }
+
+    public List<String> buscarDetalhesItens(int idVenda) {
+        List<String> detalhes = new ArrayList<>();
+        // Buscando o nome e o preço da tabela PRODUTO, e a quantidade da tabela ITEM_VENDA
+        String sql = "SELECT p.nome, iv.quantidade, p.preco " +
+                "FROM item_venda iv " +
+                "JOIN produto p ON iv.id_produto = p.id_produto " +
+                "WHERE iv.id_venda = ?";
+
+        try (Connection conn = ConexaoDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idVenda);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                detalhes.add(String.format("%s (x%d) - R$ %.2f",
+                        rs.getString("nome"),
+                        rs.getInt("quantidade"),
+                        rs.getBigDecimal("preco")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return detalhes;
+    }
 }
 
