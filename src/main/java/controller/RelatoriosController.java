@@ -90,10 +90,11 @@ public class RelatoriosController {
 
     @FXML
     private void acaoBotaoAjuda() {
-        mostrarAjuda("Ajuda: Relatórios e Lucros",
-                "• Filtros: Escolha a DATA INICIAL e FINAL para ver as vendas de um período.\n\n" +
-                        "• Gráficos: O gráfico de colunas mostra os produtos mais vendidos (o que sai mais).\n\n" +
-                        "• Exportar: Use o botão PDF para gerar um arquivo.");
+        mostrarAjuda("Ajuda: Relatório de Vendas",
+                "• Gráfico de Vendas: Mostra os 5 produtos mais vendidos no período selecionado.\n\n" +
+                        "• Filtros: Você pode filtrar por Data, Funcionário ou buscar produtos específicos.\n\n" +
+                        "• DETALHAR VENDA: Clique DUAS VEZES sobre uma venda na tabela para abrir um pop-up com todos os produtos, quantidades e preços individuais daquele pedido.\n\n" +
+                        "• Exportar PDF: Gera um documento pronto para impressão com os dados filtrados na tela.");
     }
 
     private void exibirPopUpDetalhes(Venda vendaSelecionada) {
@@ -107,14 +108,24 @@ public class RelatoriosController {
         StringBuilder sb = new StringBuilder();
         itens.forEach(item -> sb.append("✔ ").append(item).append("\n"));
 
-        // Mostra o total geral no final do pop-up
         sb.append("\n--------------------------\n");
         sb.append("VALOR TOTAL: ").append(formatadorMoeda.format(vendaSelecionada.getValorTotal()));
 
-        alert.setContentText(sb.toString());
+        // --- AJUSTE PARA NÃO CORTAR ---
+        TextArea areaTexto = new TextArea(sb.toString());
+        areaTexto.setEditable(false);
+        areaTexto.setWrapText(true); // Quebra a linha se for muito grande
+        areaTexto.setPrefHeight(250); // Altura ideal para ver vários itens
+        areaTexto.setPrefWidth(350);  // Largura para não cortar o nome
 
-        // Deixa o visual mais limpo
+        // Remove o fundo branco padrão do TextArea para parecer um alerta limpo
+        areaTexto.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+
+        alert.getDialogPane().setContent(areaTexto);
         alert.getDialogPane().setMinWidth(400);
+        alert.getDialogPane().setMinHeight(400);
+        // ------------------------------
+
         alert.showAndWait();
     }
 
@@ -381,7 +392,6 @@ public class RelatoriosController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
             Parent root = loader.load();
 
-            // Pega o controller da janelinha de ajuda que criamos ontem
             AjudaController ajuda = loader.getController();
             ajuda.initData(titulo, texto);
 
@@ -389,9 +399,12 @@ public class RelatoriosController {
             stage.setScene(new Scene(root));
             stage.setTitle("Ajuda - " + titulo);
 
-            // Travas de segurança (Modal)
-            stage.initModality(Modality.APPLICATION_MODAL);
+            // --- AS LINHAS QUE RESOLVEM ---
+            stage.sizeToScene(); // Ajusta a janela ao tamanho do conteúdo
             stage.setResizable(false);
+            // ------------------------------
+
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
         } catch (IOException e) {
