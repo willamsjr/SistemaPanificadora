@@ -101,32 +101,36 @@ public class RelatoriosController {
         VendaDAO dao = new VendaDAO();
         List<String> itens = dao.buscarDetalhesItens(vendaSelecionada.getId());
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Detalhamento da Venda #" + vendaSelecionada.getId());
-        alert.setHeaderText("Produtos Vendidos por: " + vendaSelecionada.getNomeFuncionario());
-
         StringBuilder sb = new StringBuilder();
-        itens.forEach(item -> sb.append("✔ ").append(item).append("\n"));
+        sb.append("Produtos desta venda:\n\n");
 
-        sb.append("\n--------------------------\n");
-        sb.append("VALOR TOTAL: ").append(formatadorMoeda.format(vendaSelecionada.getValorTotal()));
+        for (String item : itens) {
+            sb.append("• ").append(item).append("\n");
+        }
 
-        // --- AJUSTE PARA NÃO CORTAR ---
-        TextArea areaTexto = new TextArea(sb.toString());
-        areaTexto.setEditable(false);
-        areaTexto.setWrapText(true); // Quebra a linha se for muito grande
-        areaTexto.setPrefHeight(250); // Altura ideal para ver vários itens
-        areaTexto.setPrefWidth(350);  // Largura para não cortar o nome
+        sb.append("\n----------------------------------\n");
+        sb.append("VALOR TOTAL: R$ ").append(vendaSelecionada.getValorTotal());
 
-        // Remove o fundo branco padrão do TextArea para parecer um alerta limpo
-        areaTexto.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+        try {
+            // A MÁGICA: Usar o mesmo loader da ajuda!
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/AjudaView.fxml"));
+            Parent root = loader.load();
 
-        alert.getDialogPane().setContent(areaTexto);
-        alert.getDialogPane().setMinWidth(400);
-        alert.getDialogPane().setMinHeight(400);
-        // ------------------------------
+            AjudaController controller = loader.getController();
+            controller.initData("Detalhes da Venda #" + vendaSelecionada.getId(), sb.toString());
 
-        alert.showAndWait();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Itens da Venda");
+
+            stage.sizeToScene();
+            stage.setResizable(false);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void configurarTabela() {
