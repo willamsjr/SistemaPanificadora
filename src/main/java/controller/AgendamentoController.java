@@ -102,10 +102,40 @@ public class AgendamentoController {
             btnAjuda.setOnAction(event -> acaoBotaoAjuda());
         }
 
-        // ==========================================
-        // 7. NOVA TRAVA DE SEGURANÇA (SESSÃO PADEIRO)
-        // ==========================================
+        // 7. Chamada para colorir as linhas concluídas
+        configurarCorTabela();
+
+        // 8. NOVA TRAVA DE SEGURANÇA (SESSÃO PADEIRO)
         verificarPermissoesPadeiro();
+    }
+
+    private void configurarCorTabela() {
+        tblAgendamentos.setRowFactory(tv -> new javafx.scene.control.TableRow<Agendamento>() {
+            @Override
+            protected void updateItem(Agendamento item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    LocalDateTime agora = LocalDateTime.now();
+
+                    // 1. PRIORIDADE: SE ESTIVER CONCLUÍDO (VERDE)
+                    if ("Concluído".equalsIgnoreCase(item.getStatus())) {
+                        setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-font-weight: bold;");
+                    }
+                    // 2. SE ESTIVER PENDENTE E JÁ PASSOU DA HORA (AMARELO/LARANJA)
+                    else if ("Pendente".equalsIgnoreCase(item.getStatus()) && item.getDataAgendamento().isBefore(agora)) {
+                        // Um amarelo/alaranjado de atenção para destacar que está atrasado
+                        setStyle("-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-font-weight: bold;");
+                    }
+                    // 3. PADRÃO PARA O RESTANTE
+                    else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
     }
 
     private void verificarPermissoesPadeiro() {

@@ -121,9 +121,9 @@ public class VendaDAO {
         List<Venda> vendas = new ArrayList<>();
         // SQL robusto: busca o funcionário e o nome do primeiro produto daquela venda
         String sql = "SELECT v.*, f.nome AS nome_do_funcionario, " +
-                "(SELECT p.nome FROM item_venda iv " +
+                "(SELECT GROUP_CONCAT(p.nome SEPARATOR ', ') FROM item_venda iv " +
                 " JOIN produto p ON iv.id_produto = p.id_produto " +
-                " WHERE iv.id_venda = v.id_venda LIMIT 1) AS nome_produto_resumo, " +
+                " WHERE iv.id_venda = v.id_venda) AS nome_produto_resumo, " +
                 "(SELECT SUM(iv2.quantidade) FROM item_venda iv2 " +
                 " WHERE iv2.id_venda = v.id_venda) AS qtd_total " +
                 "FROM venda v " +

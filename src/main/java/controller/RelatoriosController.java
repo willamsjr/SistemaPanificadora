@@ -226,13 +226,17 @@ public class RelatoriosController {
 
     private void atualizarGrafico() {
         barChartVendas.getData().clear();
+
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Vendas por Produto");
 
         Map<String, Double> resumoVendas = listaVendas.stream()
-                .filter(v -> v.getNomeProduto() != null)
+                .filter(v -> v.getNomeProduto() != null && v.getValorTotal() != null)
                 .collect(Collectors.groupingBy(
-                        Venda::getNomeProduto,
+                        v -> {
+                            // Se o nome for muito grande (combo), corta para não quebrar o gráfico
+                            String nome = v.getNomeProduto();
+                            return nome.length() > 15 ? nome.substring(0, 12) + "..." : nome;
+                        },
                         Collectors.summingDouble(v -> v.getValorTotal().doubleValue())
                 ));
 
@@ -240,25 +244,20 @@ public class RelatoriosController {
                 .sorted((b, a) -> a.getValue().compareTo(b.getValue()))
                 .limit(5)
                 .forEach(entry -> {
-                    XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), entry.getValue());
-                    series.getData().add(data);
+                    series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
                 });
 
         barChartVendas.getData().add(series);
 
-        for (XYChart.Data<String, Number> data : series.getData()) {
-            if (data.getNode() != null) {
-                data.getNode().setStyle("-fx-bar-fill: #6e0d0d;");
-                Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + ": " + formatadorMoeda.format(data.getYValue())));
-            } else {
-                data.nodeProperty().addListener((ov, oldNode, newNode) -> {
-                    if (newNode != null) {
-                        newNode.setStyle("-fx-bar-fill: #6e0d0d;");
-                        Tooltip.install(newNode, new Tooltip(data.getXValue() + ": " + formatadorMoeda.format(data.getYValue())));
-                    }
-                });
+        // Pintura Vinho (#6e0d0d)
+        javafx.application.Platform.runLater(() -> {
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                if (data.getNode() != null) {
+                    data.getNode().setStyle("-fx-bar-fill: #6e0d0d;");
+                    Tooltip.install(data.getNode(), new Tooltip(data.getXValue() + ": " + formatadorMoeda.format(data.getYValue())));
+                }
             }
-        }
+        });
     }
 
     @FXML

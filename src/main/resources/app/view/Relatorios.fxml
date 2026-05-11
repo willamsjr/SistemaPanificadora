@@ -63,11 +63,11 @@
                                     </children>
                                 </VBox>
 
-                                <VBox prefWidth="450" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
+                                <VBox prefWidth="200" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <BarChart fx:id="barChartVendas" legendVisible="false" prefHeight="120">
+                                        <BarChart fx:id="barChartVendas" legendVisible="false" prefHeight="200" animated="false">
                                             <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
-                                            <yAxis><NumberAxis side="LEFT" /></yAxis>
+                                            <yAxis><NumberAxis side="LEFT" forceZeroInRange="true" /></yAxis>
                                         </BarChart>
                                     </children>
                                 </VBox>
