@@ -7,7 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
+
+import java.awt.*;
 import java.io.IOException;
 import model.Funcionario;
 
@@ -22,7 +29,35 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        showLoginScreen();
+
+        try {
+            Image logo = new Image(getClass().getResourceAsStream("/img/logo.png"));
+            ImageView imageView = new ImageView(logo);
+            imageView.setFitWidth(400);
+            imageView.setPreserveRatio(true);
+
+            StackPane splashLayout = new StackPane(imageView);
+            splashLayout.setStyle("-fx-background-color: transparent;");
+
+            Scene splashScene = new Scene(splashLayout, 450, 450,javafx.scene.paint.Color.TRANSPARENT);
+
+                Stage splashStage = new Stage();
+            splashStage.initStyle(StageStyle.TRANSPARENT); // Sem bordas
+            splashStage.setScene(splashScene);
+            splashStage.centerOnScreen();
+            splashStage.show();
+
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(event -> {
+                splashStage.close();
+                showLoginScreen();
+            });
+            delay.play();
+
+        } catch (Exception e) {
+            System.err.println("Logo não encontrada, iniciando login direto...");
+            showLoginScreen();
+        }
     }
 
     public void showLoginScreen() {
